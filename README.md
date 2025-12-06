@@ -200,17 +200,6 @@ This flow updates an existing customer's information.
 9. **Response Conversion**: Updated entity is converted to `CustomerResponseDTO`.
 10. **Response**: Returns `200 OK` with the updated customer object.
 
-**Request Body:**
-```json
-{
-  "customerCode": "C006",
-  "fullName": "David M. Miller",
-  "email": "david.m.miller@example.com",
-  "phone": "1555010601",
-  "address": "1000 Broadway, Seattle, WA 98101"
-}
-```
-
 **Testing:**
 ```
 Method: PUT
