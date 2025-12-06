@@ -1,5 +1,76 @@
 # LAB 08 PRACTICE REPORT - Customer REST API
 
+## Student Information
+- **Name:** Võ Trí Khôi
+- **Student ID:** ITCSIU24045
+- **Class:** Group 2
+
+## API Endpoints
+
+### Base URL
+`http://localhost:8080/api/customers`
+
+### Endpoints Implemented
+- ✅ GET /api/customers - Get all customers
+- ✅ GET /api/customers/{id} - Get by ID
+- ✅ POST /api/customers - Create customer
+- ✅ PUT /api/customers/{id} - Update customer
+- ✅ DELETE /api/customers/{id} - Delete customer
+- ✅ GET /api/customers/search?keyword={keyword} - Search
+- ✅ GET /api/customers/status/{status} - Filter by status
+- ✅ Pagination and sorting
+- ✅ PATCH for partial update
+- [ ] Bonus features
+
+## How to Run
+1. Create database: `customer_management`
+2. Update `application.properties` with your MySQL credentials
+3. Run: `mvn spring-boot:run`
+4. Test: Open Thunder Client or Postman
+5. Import collection: `Customer_API.postman_collection.json`
+
+## Testing
+All endpoints tested with Thunder Client.
+See `screenshots/` folder for test results.
+
+## Features Implemented
+- DTO pattern for request/response
+- Validation with @Valid
+- Exception handling with @RestControllerAdvice
+- Custom exceptions (404, 409)
+- Proper HTTP status codes
+- Search and filter
+- Pagination
+- Sorting
+
+## Known Issues
+- [List any bugs]
+
+## Time Spent
+Approximately [X] hours
+
+## Project Structure
+```
+customer-api.zip
+├── src/main/java/com/example/customerapi/
+│   ├── entity/Customer.java
+│   ├── dto/
+│   │   ├── CustomerRequestDTO.java
+│   │   ├── CustomerResponseDTO.java
+│   │   └── ErrorResponseDTO.java
+│   ├── repository/CustomerRepository.java
+│   ├── service/
+│   │   ├── CustomerService.java
+│   │   └── CustomerServiceImpl.java
+│   ├── controller/CustomerRestController.java
+│   └── exception/
+│       ├── ResourceNotFoundException.java
+│       ├── DuplicateResourceException.java
+│       └── GlobalExceptionHandler.java
+├── pom.xml
+└── README.md
+```
+
 ## Application Code Flow
 
 ### 1. GET All Customers Flow
@@ -12,22 +83,30 @@ This flow retrieves the complete list of all customers in the system.
 5. **DTO Conversion**: Each `Customer` entity is converted to `CustomerResponseDTO` using `convertToResponseDTO()`.
 6. **Response**: Returns `200 OK` with a JSON array of customer objects.
 
-**Example Response:**
-```json
+**Testing:**
+```
+Method: GET
+URL: http://localhost:8080/api/customers
+
+Expected Response (200 OK):
 [
-  {
-    "id": 1,
-    "customerCode": "C001",
-    "fullName": "John Doe",
-    "email": "john@example.com",
-    "phone": "1234567890",
-    "address": "123 Main St",
-    "status": "ACTIVE",
-    "createdAt": "2025-12-06T10:00:00"
-  },
-  ...
+    {
+        "id": 1,
+        "customerCode": "C001",
+        "fullName": "John Doe",
+        "email": "john.doe@example.com",
+        "phone": "+1-555-0101",
+        "address": "123 Main St, New York, NY 10001",
+        "status": "ACTIVE",
+        "createdAt": "2024-11-03T10:00:00"
+    },
+    ...
 ]
 ```
+
+<img width="508" height="614" alt="image" src="https://github.com/user-attachments/assets/fcc430d1-a992-4e8b-a70a-07d3f52e2003" />
+
+<img width="508" height="521" alt="image" src="https://github.com/user-attachments/assets/3416a790-ce23-4ee9-9dd2-2538561efd0b" />
 
 ### 2. GET Customer by ID Flow
 This flow retrieves a single customer by their unique identifier.
@@ -41,19 +120,21 @@ This flow retrieves a single customer by their unique identifier.
    * **Failure**: If not found, throws `ResourceNotFoundException` (handled by Global Exception Handler).
 6. **Response**: Returns `200 OK` with the customer object, or `404 Not Found` if the customer doesn't exist.
 
-**Success Response (200):**
-```json
+**Testing:**
+```
+Method: GET
+URL: http://localhost:8080/api/customers/1
+
+Expected Response (200 OK):
 {
-  "id": 1,
-  "customerCode": "C001",
-  "fullName": "John Doe",
-  "email": "john@example.com",
-  "phone": "1234567890",
-  "address": "123 Main St",
-  "status": "ACTIVE",
-  "createdAt": "2025-12-06T10:00:00"
+    "id": 1,
+    "customerCode": "C001",
+    "fullName": "John Doe",
+    ...
 }
 ```
+
+<img width="508" height="300" alt="image" src="https://github.com/user-attachments/assets/66c230ca-9507-4df4-90e1-e7e4e556e205" />
 
 ### 3. POST Create Customer Flow
 This flow creates a new customer in the system with validation.
@@ -75,30 +156,31 @@ This flow creates a new customer in the system with validation.
 8. **Response Conversion**: Saved entity is converted to `CustomerResponseDTO`.
 9. **Response**: Returns `201 Created` with the newly created customer object.
 
-**Request Body:**
-```json
+**Testing:**
+```
+Method: POST
+URL: http://localhost:8080/api/customers
+Headers: Content-Type: application/json
+
+Body (JSON):
 {
-  "customerCode": "C006",
-  "fullName": "David Miller",
-  "email": "david.miller@example.com",
-  "phone": "1555010600",
-  "address": "999 Broadway, Seattle, WA 98101"
+    "customerCode": "C006",
+    "fullName": "David Miller",
+    "email": "david.miller@example.com",
+    "phone": "+1555010600",
+    "address": "999 Broadway, Seattle, WA 98101"
+}
+
+Expected Response (201 Created):
+{
+    "id": 6,
+    "customerCode": "C006",
+    "fullName": "David Miller",
+    ...
 }
 ```
 
-**Success Response (201):**
-```json
-{
-  "id": 6,
-  "customerCode": "C006",
-  "fullName": "David Miller",
-  "email": "david.miller@example.com",
-  "phone": "1555010600",
-  "address": "999 Broadway, Seattle, WA 98101",
-  "status": "ACTIVE",
-  "createdAt": "2025-12-06T10:21:00"
-}
-```
+<img width="508" height="294" alt="image" src="https://github.com/user-attachments/assets/81c13fca-64a6-4ced-9495-c94e4e23c07c" />
 
 ### 4. PUT Update Customer Flow
 This flow updates an existing customer's information.
@@ -129,19 +211,31 @@ This flow updates an existing customer's information.
 }
 ```
 
-**Success Response (200):**
-```json
+**Testing:**
+```
+Method: PUT
+URL: http://localhost:8080/api/customers/6
+Headers: Content-Type: application/json
+
+Body (JSON):
 {
-  "id": 6,
-  "customerCode": "C006",
-  "fullName": "David M. Miller",
-  "email": "david.m.miller@example.com",
-  "phone": "1555010601",
-  "address": "1000 Broadway, Seattle, WA 98101",
-  "status": "ACTIVE",
-  "createdAt": "2025-12-06T10:21:00"
+    "customerCode": "C006",
+    "fullName": "David Miller Jr.",
+    "email": "david.miller.jr@example.com",
+    "phone": "+15550107",
+    "address": "1000 Broadway, Seattle, WA 98101"
+}
+
+Expected Response (200 OK):
+{
+    "id": 8,
+    "customerCode": "C006",
+    "fullName": "David Miller Jr.",
+    ...
 }
 ```
+
+<img width="509" height="304" alt="image" src="https://github.com/user-attachments/assets/132a8729-9889-4432-9b9a-25c987843e0d" />
 
 ### 5. DELETE Customer Flow
 This flow removes a customer from the system.
@@ -155,12 +249,18 @@ This flow removes a customer from the system.
 5. **Database Delete**: `CustomerRepository.deleteById(id)` removes the customer.
 6. **Response**: Returns `200 OK` with a success message.
 
-**Success Response (200):**
-```json
+**Testing:**
+```
+Method: DELETE
+URL: http://localhost:8080/api/customers/8
+
+Expected Response (200 OK):
 {
-  "message": "Customer deleted successfully"
+    "message": "Customer deleted successfully"
 }
 ```
+
+<img width="508" height="179" alt="image" src="https://github.com/user-attachments/assets/ebfcfe2b-46ed-43d3-9ca9-16216dcb5969" />
 
 ### 6. Search Customers Flow
 This flow searches for customers by keyword across multiple fields.
@@ -176,47 +276,31 @@ This flow searches for customers by keyword across multiple fields.
 
 **Example Request:** `GET /api/customers/search?keyword=john`
 
-**Response (200):**
-```json
+**Testing:**
+```
+Method: GET
+URL: http://localhost:8080/api/customers/search?keyword=john
+
+Expected Response (200 OK):
 [
-  {
-    "id": 1,
-    "customerCode": "C001",
-    "fullName": "John Doe",
-    "email": "john@example.com",
-    ...
-  }
+    {
+        "id": 1,
+        "customerCode": "C001",
+        "fullName": "John Doe",
+        ...
+    },
+    {
+        "id": 3,
+        "customerCode": "C003",
+        "fullName": "Bob Johnson",
+        ...
+    }
 ]
 ```
 
-### 7. Get Customers by Status Flow
-This flow retrieves all customers with a specific status (ACTIVE/INACTIVE).
+<img width="509" height="534" alt="image" src="https://github.com/user-attachments/assets/643ef9d0-a79a-437b-a401-042d86c9578a" />
 
-1. **HTTP Request**: Client sends `GET http://localhost:8080/api/customers/status/{status}`.
-2. **Controller**: `CustomerRestController.getCustomersByStatus(@PathVariable String status)` extracts the status.
-3. **Service Layer**: Controller calls `CustomerService.getCustomersByStatus(status)`.
-4. **Repository**: Service calls `CustomerRepository.findByStatus(status)`.
-5. **DTO Conversion**: Each matching `Customer` entity is converted to `CustomerResponseDTO`.
-6. **Response**: Returns `200 OK` with an array of customers with the specified status.
-
-**Example Request:** `GET /api/customers/status/ACTIVE`
-
-**Response (200):**
-```json
-[
-  {
-    "id": 1,
-    "customerCode": "C001",
-    "status": "ACTIVE",
-    ...
-  },
-  ...
-]
-```
-
-## Error Handling Flows
-
-### 8. Validation Error Flow (400 Bad Request)
+### 7. Validation Error Flow (400 Bad Request)
 This flow handles invalid input data during CREATE or UPDATE operations.
 
 1. **Trigger**: Client sends invalid data (e.g., missing required fields, invalid format).
@@ -228,34 +312,36 @@ This flow handles invalid input data during CREATE or UPDATE operations.
    * Creates `ErrorResponseDTO` with status `400` and detailed error messages.
 4. **Response**: Returns `400 Bad Request` with structured error information.
 
-**Example Invalid Request:**
-```json
+**Testing:**
+```
+Method: POST
+URL: http://localhost:8080/api/customers
+Headers: Content-Type: application/json
+
+Body (Invalid - missing required fields):
 {
-  "customerCode": "C006",
-  "fullName": "D",
-  "email": "invalid-email",
-  "phone": "+1555",
-  "address": "999 Broadway"
+    "customerCode": "C",
+    "email": "invalid-email"
+}
+
+Expected Response (400 Bad Request):
+{
+    "timestamp": "2024-11-03T10:30:00",
+    "status": 400,
+    "error": "Validation Failed",
+    "message": "Invalid input data",
+    "path": "/api/customers",
+    "details": [
+        "customerCode: Customer code must be 3-20 characters",
+        "fullName: Full name is required",
+        "email: Invalid email format"
+    ]
 }
 ```
 
-**Error Response (400):**
-```json
-{
-  "timestamp": "2025-12-06T10:21:10.449",
-  "status": 400,
-  "error": "Validation Failed",
-  "message": "Invalid input data",
-  "path": "/api/customers",
-  "details": [
-    "fullName: Name must be 2-100 characters",
-    "email: Invalid email format",
-    "phone: Invalid phone number format"
-  ]
-}
-```
+<img width="508" height="399" alt="image" src="https://github.com/user-attachments/assets/95c2e5f2-92fc-494a-b7d1-e3ed978c0401" />
 
-### 9. Resource Not Found Flow (404 Not Found)
+### 8. Resource Not Found Flow (404 Not Found)
 This flow handles requests for non-existent resources.
 
 1. **Trigger**: Client requests a customer with an ID that doesn't exist (GET, PUT, or DELETE).
@@ -267,18 +353,24 @@ This flow handles requests for non-existent resources.
 
 **Example Request:** `GET /api/customers/999` (ID doesn't exist)
 
-**Error Response (404):**
-```json
+**Testing:**
+```
+Method: GET
+URL: http://localhost:8080/api/customers/999
+
+Expected Response (404 Not Found):
 {
-  "timestamp": "2025-12-06T10:25:00.123",
-  "status": 404,
-  "error": "Not Found",
-  "message": "Customer not found with id: 999",
-  "path": "/api/customers/999"
+    "timestamp": "2024-11-03T10:35:00",
+    "status": 404,
+    "error": "Not Found",
+    "message": "Customer not found with id: 999",
+    "path": "/api/customers/999"
 }
 ```
 
-### 10. Duplicate Resource Flow (409 Conflict)
+<img width="508" height="269" alt="image" src="https://github.com/user-attachments/assets/7bca129f-c2c1-41bc-8534-089f767f4fe1" />
+
+### 9. Duplicate Resource Flow (409 Conflict)
 This flow handles attempts to create or update with duplicate unique fields.
 
 1. **Trigger**: Client attempts to:
@@ -292,26 +384,31 @@ This flow handles attempts to create or update with duplicate unique fields.
    * Creates `ErrorResponseDTO` with status `409`.
 5. **Response**: Returns `409 Conflict` with error details.
 
-**Example Request:** Creating customer with existing email
-```json
+**Testing:**
+```
+Method: POST
+URL: http://localhost:8080/api/customers
+Headers: Content-Type: application/json
+
+Body (Duplicate email):
 {
-  "customerCode": "C007",
-  "fullName": "Jane Smith",
-  "email": "john@example.com",
-  ...
+    "customerCode": "C007",
+    "fullName": "Test User",
+    "email": "john.doe@example.com"
 }
+
+Expected Response (409 Conflict):
+{
+    "timestamp": "2024-11-03T10:40:00",
+    "status": 409,
+    "error": "Conflict",
+    "message": "Email already exists: john.doe@example.com",
+    "path": "/api/customers"
+}
+
 ```
 
-**Error Response (409):**
-```json
-{
-  "timestamp": "2025-12-06T10:30:00.456",
-  "status": 409,
-  "error": "Conflict",
-  "message": "Email already exists: john@example.com",
-  "path": "/api/customers"
-}
-```
+<img width="508" height="270" alt="image" src="https://github.com/user-attachments/assets/26eaa384-bde6-408f-9df9-aa32a4b374f7" />
 
 ## Architecture Components
 
